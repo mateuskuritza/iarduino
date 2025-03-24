@@ -1,3 +1,5 @@
 todo-list.md
 venv
 data
+*.h5
+*.keras
