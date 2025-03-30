@@ -1,7 +1,8 @@
 todo-list.md
 venv
-data
+data/captures
+data/processed_data
 *.h5
 *.keras
-models/*
+models/*.json
 __pycache__
