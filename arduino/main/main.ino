@@ -21,17 +21,21 @@ void loop()
         {
             int pin = command.substring(4).toInt();
 
-            for (int i = 0; i < numPins; i++)
-            {
-                if (ledPins[i] == pin)
-                {
-                    digitalWrite(pin, HIGH);
-                }
-                else
-                {
-                    digitalWrite(ledPins[i], LOW);
-                }
-            }
+            turnOffAllLeds();
+
+            digitalWrite(pin, HIGH);
+
+            delay(2000);
+
+            turnOffAllLeds();
         }
+    }
+}
+
+void turnOffAllLeds()
+{
+    for (int i = 0; i < numPins; i++)
+    {
+        digitalWrite(ledPins[i], LOW);
     }
 }
