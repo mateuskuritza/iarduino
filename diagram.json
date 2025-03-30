@@ -1,0 +1,94 @@
+{
+    "version": 1,
+    "author": "Anonymous maker",
+    "editor": "wokwi",
+    "parts": [
+        {
+            "type": "wokwi-arduino-mega",
+            "id": "mega",
+            "top": 0,
+            "left": 0,
+            "attrs": {}
+        },
+        {
+            "type": "wokwi-led",
+            "id": "led1",
+            "top": -205.2,
+            "left": 243.8,
+            "attrs": {
+                "color": "red"
+            }
+        },
+        {
+            "type": "wokwi-resistor",
+            "id": "r1",
+            "top": -120,
+            "left": 28.25,
+            "rotate": 90,
+            "attrs": {
+                "value": "1000"
+            }
+        },
+        {
+            "type": "wokwi-led",
+            "id": "led2",
+            "top": -272.4,
+            "left": 119,
+            "attrs": {
+                "color": "blue"
+            }
+        }
+    ],
+    "connections": [
+        [
+            "r1:1",
+            "led1:C",
+            "green",
+            [
+                "v0"
+            ]
+        ],
+        [
+            "led1:A",
+            "mega:10",
+            "green",
+            [
+                "v124.8",
+                "h-111.3"
+            ]
+        ],
+        [
+            "r1:2",
+            "mega:GND.1",
+            "green",
+            [
+                "v18",
+                "h57.6",
+                "v76.2"
+            ]
+        ],
+        [
+            "led2:C",
+            "r1:1",
+            "blue",
+            [
+                "h-76.4",
+                "v86.4"
+            ]
+        ],
+        [
+            "led2:A",
+            "mega:12",
+            "blue",
+            [
+                "v86.4",
+                "h-15.6"
+            ]
+        ]
+    ],
+    "serialMonitor": {
+        "display": "always",
+        "newline": "lf"
+    },
+    "dependencies": {}
+}
