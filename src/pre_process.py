@@ -1,0 +1,75 @@
+import os
+import cv2
+import numpy as np
+from sklearn.model_selection import train_test_split
+
+IMG_SIZE = 224
+RAW_DATA_PATH = "data/captures"
+PROCESSED_PATH = "data/processed_data"
+
+
+def create_processed_folder_structure(labels):
+    for label in labels:
+        path = os.path.join(PROCESSED_PATH, label)
+        os.makedirs(path, exist_ok=True)
+
+
+def load_and_process_images():
+    X = []
+    y = []
+    labels = os.listdir(RAW_DATA_PATH)
+
+    create_processed_folder_structure(labels)
+
+    for label in labels:
+        class_path = os.path.join(RAW_DATA_PATH, label)
+        save_path = os.path.join(PROCESSED_PATH, label)
+        if not os.path.isdir(class_path):
+            continue
+
+        for file in os.listdir(class_path):
+            img_path = os.path.join(class_path, file)
+            img = cv2.imread(img_path)
+            if img is None:
+                continue
+
+            img_resized = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+
+            # Salvar imagem processada em formato JPEG (mantendo visualização humana)
+            processed_img_path = os.path.join(save_path, file)
+            cv2.imwrite(processed_img_path, img_resized)
+
+            # Normalizar para treino (valores entre 0 e 1)
+            img_normalized = img_resized / 255.0
+            X.append(img_normalized)
+            y.append(label)
+
+    return np.array(X), np.array(y), labels
+
+
+def encode_labels(y, label_names):
+    label_to_index = {name: i for i, name in enumerate(label_names)}
+    encoded = np.array([label_to_index[label] for label in y])
+    one_hot = np.eye(len(label_names))[encoded]
+    return one_hot
+
+
+def preprocess():
+    print("[INFO] Carregando e processando imagens...")
+    X, y, label_names = load_and_process_images()
+
+    print("[INFO] Codificando rótulos...")
+    y_encoded = encode_labels(y, label_names)
+
+    print("[INFO] Dividindo dataset...")
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y_encoded, test_size=0.2, random_state=42, stratify=y
+    )
+
+    print(f"[INFO] Total de imagens processadas: {len(X)}")
+    print(f"[INFO] Labels: {label_names}")
+    return X_train, X_test, y_train, y_test, label_names
+
+
+if __name__ == "__main__":
+    preprocess()
