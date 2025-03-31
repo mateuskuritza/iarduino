@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow.keras import layers, models
 from pre_process import preprocess
 import json
+from shared import MODEL_EXT, MODEL_PREFIX
 
 
 def build_model(input_shape, num_classes):
@@ -42,12 +43,12 @@ def main():
     print(f"[RESULT] Acurácia no teste: {acc:.2%}")
 
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    save_path = f"models/model_{timestamp}.keras"
+    save_path = f"models/{MODEL_PREFIX}{timestamp}{MODEL_EXT}"
 
     print(f"[INFO] Salvando modelo como {save_path}...")
     model.save(save_path)
 
-    label_file = f"models/model_{timestamp}.labels.json"
+    label_file = f"models/{MODEL_PREFIX}{timestamp}.labels.json"
     with open(label_file, "w") as f:
         json.dump(labels, f)
 

@@ -7,15 +7,11 @@ import sys
 import os
 import json
 import argparse
-
-IMG_SIZE = 224
-MODEL_PREFIX = "model_"
-MODEL_EXT = ".keras"
-MODELS_FOLDER = "models"
+from shared import MODEL_EXT, MODELS_FOLDER, IMG_SIZE
 
 
 def load_labels_from_model(model_filename):
-    label_file = model_filename.replace(".keras", ".labels.json")
+    label_file = model_filename.replace(MODEL_EXT, ".labels.json")
     label_path = os.path.join(MODELS_FOLDER, label_file)
     if not os.path.exists(label_path):
         print(f"[ERRO] Labels '{label_file}' não encontrados.")
@@ -52,7 +48,7 @@ def main(model_filename, port_map, serial_port="/dev/ttyACM0"):
 
     model = tf.keras.models.load_model(model_path)
     ser = serial.Serial(serial_port, 9600)
-    time.sleep(2)  # tempo para o Arduino reiniciar
+    time.sleep(2)  # Arduino must restart after serial init
 
     cap = cv2.VideoCapture(0)
 

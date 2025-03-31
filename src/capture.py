@@ -27,7 +27,7 @@ def capture_images(label, num_images=50):
         count += 1
 
         cv2.imshow("Capturando...", frame)
-        cv2.waitKey(100)  # tira uma foto a cada 100ms
+        cv2.waitKey(100)
 
     cap.release()
     cv2.destroyAllWindows()

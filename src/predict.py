@@ -4,15 +4,11 @@ import tensorflow as tf
 import sys
 import os
 import json
-
-IMG_SIZE = 224
-MODEL_PREFIX = "model_"
-MODEL_EXT = ".keras"
-MODELS_FOLDER = "models"
+from shared import IMG_SIZE, MODEL_PREFIX, MODEL_EXT, MODELS_FOLDER
 
 
 def load_labels_from_model(model_filename):
-    label_file = model_filename.replace(".keras", ".labels.json")
+    label_file = model_filename.replace(MODEL_EXT, ".labels.json")
     label_path = os.path.join(MODELS_FOLDER, label_file)
     if not os.path.exists(label_path):
         print(f"[ERRO] Arquivo de labels '{label_file}' não encontrado.")
@@ -32,11 +28,10 @@ def draw_label_with_background(frame, text, position, font, font_scale, thicknes
     text_w, text_h = text_size
 
     x, y = position
-    # fundo preto
     cv2.rectangle(
         frame, (x - 5, y - text_h - 10), (x + text_w + 5, y + 10), (0, 0, 0), -1
     )
-    # texto branco
+
     cv2.putText(frame, text, (x, y), font, font_scale, (255, 255, 255), thickness)
 
 
@@ -63,7 +58,7 @@ def main(model_filename):
         input_data = preprocess_frame(frame)
         prediction = model.predict(input_data, verbose=0)[0]
 
-        # Top 3 índices ordenados por probabilidade
+        # Top 3 indices (%)
         top_indices = prediction.argsort()[-3:][::-1]
 
         for i, idx in enumerate(top_indices):

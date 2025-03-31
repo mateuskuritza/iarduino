@@ -2,28 +2,25 @@ import os
 import cv2
 import numpy as np
 from sklearn.model_selection import train_test_split
-
-IMG_SIZE = 224
-RAW_DATA_PATH = "data/captures"
-PROCESSED_PATH = "data/processed_data"
+from shared import PROCESSED_DATA_DIR, CAPTURES_DIR, IMG_SIZE
 
 
 def create_processed_folder_structure(labels):
     for label in labels:
-        path = os.path.join(PROCESSED_PATH, label)
+        path = os.path.join(PROCESSED_DATA_DIR, label)
         os.makedirs(path, exist_ok=True)
 
 
 def load_and_process_images():
     X = []
     y = []
-    labels = os.listdir(RAW_DATA_PATH)
+    labels = os.listdir(CAPTURES_DIR)
 
     create_processed_folder_structure(labels)
 
     for label in labels:
-        class_path = os.path.join(RAW_DATA_PATH, label)
-        save_path = os.path.join(PROCESSED_PATH, label)
+        class_path = os.path.join(CAPTURES_DIR, label)
+        save_path = os.path.join(PROCESSED_DATA_DIR, label)
         if not os.path.isdir(class_path):
             continue
 
@@ -35,11 +32,9 @@ def load_and_process_images():
 
             img_resized = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
 
-            # Salvar imagem processada em formato JPEG (mantendo visualização humana)
             processed_img_path = os.path.join(save_path, file)
             cv2.imwrite(processed_img_path, img_resized)
 
-            # Normalizar para treino (valores entre 0 e 1)
             img_normalized = img_resized / 255.0
             X.append(img_normalized)
             y.append(label)

@@ -14,9 +14,7 @@ from PyQt5.QtWidgets import (
     QInputDialog,
 )
 from predict import get_latest_model
-
-PROCESSED_DATA_DIR = "data/processed_data"
-CAPTURES_DIR = "data/captures"
+from shared import PROCESSED_DATA_DIR, CAPTURES_DIR
 
 
 def get_registered_items():
@@ -107,12 +105,9 @@ class MainWindow(QWidget):
         if not ok or not port:
             return
 
-        # Serializamos o mapa de pinos como JSON no argumento
         try:
             import json
             import tempfile
-            import sys
-            import subprocess
 
             with tempfile.NamedTemporaryFile(
                 mode="w", delete=False, suffix=".json"
@@ -123,7 +118,7 @@ class MainWindow(QWidget):
             subprocess.run(
                 [
                     sys.executable,
-                    "src/ia/detect_with_arduino.py",
+                    "src/arduino.py",
                     "--model",
                     get_latest_model(),
                     "--map",
