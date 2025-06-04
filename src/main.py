@@ -35,7 +35,7 @@ class MainWindow(QWidget):
 
         self.layout = QVBoxLayout()
 
-        self.label = QLabel("Itens já cadastrados:")
+        self.label = QLabel("Itens presentes no modelo de detecção:")
         self.layout.addWidget(self.label)
 
         self.list_widget = QListWidget()
@@ -181,6 +181,7 @@ class MainWindow(QWidget):
         try:
             subprocess.run([sys.executable, "src/train_model.py"], check=True)
             QMessageBox.information(self, "Treinamento", "Modelo treinado com sucesso!")
+            self.populate_list()
         except subprocess.CalledProcessError:
             QMessageBox.critical(self, "Erro", "Erro ao treinar o modelo.")
 
