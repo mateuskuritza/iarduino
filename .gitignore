@@ -1,7 +1,9 @@
 todo-list.md
 venv
-data/captures
-data/processed_data
+data/captures/*
+data/processed_data/*
+!data/captures/.gitkeep
+!data/processed_data/.gitkeep
 *.h5
 *.keras
 models/*.json
