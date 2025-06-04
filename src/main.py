@@ -12,7 +12,11 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QMessageBox,
     QInputDialog,
+    QDialog,
 )
+from PyQt5.QtGui import QColor, QPalette
+from PyQt5.QtCore import Qt
+import qtawesome as qta
 from predict import get_latest_model
 from shared import PROCESSED_DATA_DIR, CAPTURES_DIR
 
@@ -31,38 +35,137 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Gerenciador de Itens")
-        self.setGeometry(100, 100, 350, 500)
+        self.setGeometry(100, 100, 400, 550)
+
+        palette = self.palette()
+        palette.setColor(QPalette.Window, QColor("#f0f4f8"))
+        palette.setColor(QPalette.WindowText, QColor("#22223b"))
+        self.setPalette(palette)
 
         self.layout = QVBoxLayout()
 
         self.label = QLabel("Itens presentes no modelo de detecção:")
+        self.label.setStyleSheet("font-weight: bold; font-size: 16px; color: #22223b;")
         self.layout.addWidget(self.label)
 
         self.list_widget = QListWidget()
+        self.list_widget.setStyleSheet(
+            "background: #fff; color: #000; border: 1px solid #c9ada7; border-radius: 6px; font-size: 14px;"
+        )
         self.layout.addWidget(self.list_widget)
 
-        self.add_button = QPushButton("Adicionar novo item")
+        self.add_button = QPushButton(
+            qta.icon("fa5s.plus", color="#4a4e69"), " Adicionar novo item"
+        )
+        self.add_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 6px;
+                padding: 6px 12px;
+                text-align: left;
+                color: #fff;
+                background: rgba(154, 140, 152, 0.7);
+            }
+
+            QPushButton:hover {
+                background: rgba(154, 140, 152, 1);
+            }
+        """
+        )
+        self.add_button.setIconSize(self.add_button.iconSize())
         self.add_button.clicked.connect(self.add_new_item)
         self.layout.addWidget(self.add_button)
 
-        self.remove_button = QPushButton("Remover item selecionado")
+        self.remove_button = QPushButton(
+            qta.icon("fa5s.trash", color="#c9184a"), " Remover item selecionado"
+        )
+        self.remove_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 6px;
+                padding: 6px 12px;
+                text-align: left;
+                color: #c9184a;
+                background: rgba(242, 233, 228, 0.7);
+            }
+
+            QPushButton:hover {
+                background: rgba(242, 233, 228, 1);
+            }
+        """
+        )
+        self.remove_button.setIconSize(self.remove_button.iconSize())
         self.remove_button.clicked.connect(self.remove_selected_item)
         self.layout.addWidget(self.remove_button)
 
-        self.train_button = QPushButton("Treinar novo modelo")
+        self.train_button = QPushButton(
+            qta.icon("fa5s.brain", color="#fff"), " Treinar novo modelo"
+        )
+        self.train_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 6px;
+                padding: 6px 12px;
+                text-align: left;
+                color: #fff;
+                background: rgba(74, 78, 105, 0.7);
+            }
+
+            QPushButton:hover {
+                background: rgba(74, 78, 105, 1);
+            }
+        """
+        )
+        self.train_button.setIconSize(self.train_button.iconSize())
         self.train_button.clicked.connect(self.train_model)
         self.layout.addWidget(self.train_button)
 
-        self.detect_button = QPushButton("Iniciar detecção")
+        self.detect_button = QPushButton(
+            qta.icon("fa5s.camera", color="#22223b"), " Iniciar detecção"
+        )
+        self.detect_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 6px;
+                padding: 6px 12px;
+                text-align: left;
+                color: #22223b;
+                background: rgba(0, 187, 255, 0.7);
+            }
+
+            QPushButton:hover {
+                background: rgba(0, 187, 255, 1);
+            }
+        """
+        )
+        self.detect_button.setIconSize(self.detect_button.iconSize())
         self.detect_button.clicked.connect(self.start_detection)
         self.layout.addWidget(self.detect_button)
 
-        self.setLayout(self.layout)
-        self.populate_list()
+        self.arduino_button = QPushButton(
+            qta.icon("fa5s.microchip", color="#00796b"), " Iniciar Arduino"
+        )
+        self.arduino_button.setStyleSheet(
+            """
+            QPushButton {
+                border-radius: 6px;
+                padding: 6px 12px;
+                text-align: left;
+                color: #00796b;
+                background: rgba(183, 228, 199, 0.7);
+            }
 
-        self.arduino_button = QPushButton("Iniciar Arduino")
+            QPushButton:hover {
+                background: rgba(183, 228, 199, 1);
+            }
+        """
+        )
+        self.arduino_button.setIconSize(self.arduino_button.iconSize())
         self.arduino_button.clicked.connect(self.start_arduino)
         self.layout.addWidget(self.arduino_button)
+
+        self.setLayout(self.layout)
+        self.populate_list()
 
     def start_arduino(self):
         items = get_registered_items()
@@ -177,13 +280,39 @@ class MainWindow(QWidget):
             except subprocess.CalledProcessError:
                 QMessageBox.critical(self, "Erro", "Erro ao capturar imagens.")
 
+    def show_training_modal(self):
+        self.training_dialog = QDialog(self)
+        self.training_dialog.setModal(True)
+        self.training_dialog.setWindowTitle("Treinando modelo")
+        self.training_dialog.setWindowFlags(
+            self.training_dialog.windowFlags() & ~Qt.WindowContextHelpButtonHint
+        )
+        layout = QVBoxLayout()
+        label = QLabel("Treinando modelo, por favor aguarde...")
+        label.setAlignment(Qt.AlignCenter)
+        label.setStyleSheet("font-size: 16px; color: #4a4e69; font-weight: bold;")
+        layout.addWidget(label)
+        self.training_dialog.setLayout(layout)
+        self.training_dialog.setStyleSheet("background: #fff; border-radius: 12px;")
+        self.training_dialog.resize(320, 100)
+        self.training_dialog.show()
+
+    def hide_training_modal(self):
+        if hasattr(self, "training_dialog"):
+            self.training_dialog.accept()
+            del self.training_dialog
+
     def train_model(self):
+        self.show_training_modal()
+        QApplication.processEvents()
         try:
             subprocess.run([sys.executable, "src/train_model.py"], check=True)
             QMessageBox.information(self, "Treinamento", "Modelo treinado com sucesso!")
             self.populate_list()
         except subprocess.CalledProcessError:
             QMessageBox.critical(self, "Erro", "Erro ao treinar o modelo.")
+        finally:
+            self.hide_training_modal()
 
     def start_detection(self):
         try:
