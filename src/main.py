@@ -178,7 +178,7 @@ class MainWindow(QWidget):
             pin, ok = QInputDialog.getText(
                 self,
                 f"Configurar pino para {item}",
-                f"Qual pino do Arduino acende para '{item}' (entre 2 e 13)?",
+                f"Qual pino do Arduino deve ser acionado para: '{item}' (entre 2 e 13)?",
             )
             if ok and pin.isdigit():
                 pinAsInt = int(pin)

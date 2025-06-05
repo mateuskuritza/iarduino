@@ -31,12 +31,23 @@ def load_and_process_images():
                 continue
 
             img_resized = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
-
             processed_img_path = os.path.join(save_path, file)
             cv2.imwrite(processed_img_path, img_resized)
 
             img_normalized = img_resized / 255.0
             X.append(img_normalized)
+            y.append(label)
+
+            img_flipped = cv2.flip(img_resized, 1)
+            X.append(img_flipped / 255.0)
+            y.append(label)
+
+            h, w = img_resized.shape[:2]
+            M = cv2.getRotationMatrix2D((w / 2, h / 2), 10, 1)
+            img_rotated = cv2.warpAffine(
+                img_resized, M, (w, h), borderMode=cv2.BORDER_REFLECT
+            )
+            X.append(img_rotated / 255.0)
             y.append(label)
 
     return np.array(X), np.array(y), labels
