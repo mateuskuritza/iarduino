@@ -25,9 +25,9 @@ void loop()
 
             digitalWrite(pin, HIGH);
 
-            delay(2000);
+            // delay(2000);
 
-            turnOffAllLeds();
+            // turnOffAllLeds();
         }
     }
 }
