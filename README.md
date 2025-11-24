@@ -55,3 +55,5 @@ python src/main.py
 Abra `diagram.json` no [Wokwi](https://wokwi.com/projects/426892168473742337) para simular o circuito.
 
 ---
+
+/dev/cu.usbmodem1301
