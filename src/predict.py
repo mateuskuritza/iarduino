@@ -4,7 +4,42 @@ import tensorflow as tf
 import sys
 import os
 import json
+from collections import deque
 from shared import IMG_SIZE, MODEL_PREFIX, MODEL_EXT, MODELS_FOLDER
+
+CONFIDENCE_THRESHOLD = 0.70
+BUFFER_SIZE = 10
+STABLE_FRAMES_REQUIRED = 5
+
+
+class PredictionBuffer:
+    def __init__(self, buffer_size=BUFFER_SIZE, stable_frames=STABLE_FRAMES_REQUIRED):
+        self.buffer = deque(maxlen=buffer_size)
+        self.stable_frames = stable_frames
+        self.current_label = None
+        self.stable_count = 0
+
+    def add_prediction(self, prediction):
+        self.buffer.append(prediction)
+
+    def get_smoothed_prediction(self):
+        if len(self.buffer) == 0:
+            return None
+        return np.mean(self.buffer, axis=0)
+
+    def get_stable_label(self, current_label):
+        if current_label == self.current_label:
+            self.stable_count += 1
+        else:
+            self.stable_count = 1
+            if self.stable_count >= self.stable_frames:
+                self.current_label = current_label
+
+        return (
+            self.current_label
+            if self.stable_count >= self.stable_frames
+            else self.current_label
+        )
 
 
 def load_labels_from_model(model_filename):
@@ -23,16 +58,25 @@ def preprocess_frame(frame):
     return np.expand_dims(frame_normalized, axis=0)
 
 
-def draw_label_with_background(frame, text, position, font, font_scale, thickness):
+def draw_label_with_background(
+    frame,
+    text,
+    position,
+    font,
+    font_scale,
+    thickness,
+    bg_color=(0, 0, 0),
+    text_color=(255, 255, 255),
+):
     text_size, _ = cv2.getTextSize(text, font, font_scale, thickness)
     text_w, text_h = text_size
 
     x, y = position
     cv2.rectangle(
-        frame, (x - 5, y - text_h - 10), (x + text_w + 5, y + 10), (0, 0, 0), -1
+        frame, (x - 5, y - text_h - 10), (x + text_w + 5, y + 10), bg_color, -1
     )
 
-    cv2.putText(frame, text, (x, y), font, font_scale, (255, 255, 255), thickness)
+    cv2.putText(frame, text, (x, y), font, font_scale, text_color, thickness)
 
 
 def main(model_filename):
@@ -58,7 +102,6 @@ def main(model_filename):
         input_data = preprocess_frame(frame)
         prediction = model.predict(input_data, verbose=0)[0]
 
-        # Top 3 indices (%)
         top_indices = prediction.argsort()[-3:][::-1]
 
         for i, idx in enumerate(top_indices):

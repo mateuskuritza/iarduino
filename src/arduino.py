@@ -73,9 +73,9 @@ def main(model_filename, port_map, serial_port="/dev/ttyACM0"):
             last_sent = label
 
         draw_label(frame, f"{label}: {confidence*100:.1f}%", (30, 60))
-        cv2.imshow("Detecção com Arduino", frame)
+        cv2.imshow("Deteccao com Arduino", frame)
 
-        if cv2.getWindowProperty("Detecção com Arduino", cv2.WND_PROP_VISIBLE) < 1:
+        if cv2.getWindowProperty("Deteccao com Arduino", cv2.WND_PROP_VISIBLE) < 1:
             break
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
