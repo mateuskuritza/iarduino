@@ -68,6 +68,7 @@ def main(model_filename, port_map, serial_port="/dev/ttyACM0"):
         port = port_map.get(label)
 
         if port and label != last_sent:
+            print("[ARDUINO] Comando enviado:", label, "-> Porta", f"LED:{port}")
             ser.write(f"LED:{port}\n".encode())
             last_sent = label
 
