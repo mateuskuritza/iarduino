@@ -48,7 +48,7 @@ def main(model_filename, port_map, serial_port="/dev/ttyACM0"):
 
     model = tf.keras.models.load_model(model_path)
     ser = serial.Serial(serial_port, 9600)
-    time.sleep(2)  # Arduino must restart after serial init
+    time.sleep(2)
 
     cap = cv2.VideoCapture(0)
 

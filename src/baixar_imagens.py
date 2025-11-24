@@ -1,6 +1,5 @@
 from bing_image_downloader import downloader
 
-# Lista de frutas e pastas
 frutas = [
     # ("fruta banana com fundo branco", "data/captures/banana"),
     # ("fruta morango com fundo branco", "data/captures/morango"),
@@ -23,7 +22,6 @@ for fruta, pasta in frutas:
         timeout=30,
         verbose=True,
     )
-    # Renomeia a pasta criada para o nome correto (sem espaços, acentos)
     import os, shutil
 
     nome_bing = (
